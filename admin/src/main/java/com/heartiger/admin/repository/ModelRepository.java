@@ -1,7 +1,5 @@
 package com.heartiger.admin.repository;
 
-import com.heartiger.admin.service.BeanUtil;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
@@ -24,6 +22,10 @@ public abstract class ModelRepository<T extends Serializable, K>{
         this.idClazz = idClazz;
     }
 
+    public Class<T> getClazz(){
+        return this.clazz;
+    }
+
     public void setClazz(Class<T> clazzToSet ) {
         this.clazz = clazzToSet;
     }
@@ -37,7 +39,7 @@ public abstract class ModelRepository<T extends Serializable, K>{
                 .getResultList();
     }
 
-    public T save(T entity ){
+    public T save(T entity){
         entityManager.persist( entity );
         entityManager.flush();
         return entity;
@@ -49,11 +51,11 @@ public abstract class ModelRepository<T extends Serializable, K>{
         return entity;
     }
 
-    public void delete( T entity ){
-        entityManager.remove( entity );
+    public void delete(T entity){
+        entityManager.remove(entity);
     }
 
-    public void deleteById( K entityId ) {
+    public void deleteById(K entityId) {
         T entity = this.findOne(entityId);
         delete(entity);
     }

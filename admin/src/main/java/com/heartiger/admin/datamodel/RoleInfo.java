@@ -1,6 +1,7 @@
 package com.heartiger.admin.datamodel;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -14,19 +15,19 @@ public class RoleInfo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer roleId;
 
+    @NotNull(message = "Need an Role.")
     private String roleName;
 
-    private Boolean isDeleted = false;
+    private Boolean isDeleted;
 
     private Boolean isActive = true;
 
-
-    public Integer getUserId() {
+    public Integer getRoleId() {
         return roleId;
     }
 
-    public void setUserId(Integer userId) {
-        this.roleId = userId;
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
     }
 
     public String getRoleName() {
@@ -37,19 +38,21 @@ public class RoleInfo implements Serializable {
         this.roleName = roleName;
     }
 
-    public Boolean getDeleted() {
+    // Jackson mapping requires setter and getter to have get(set)+"property name".
+    // Or you can use @JsonProperty annotation.
+    public Boolean getIsDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setIsDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
 
-    public Boolean getActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
+    public void setIsActive(Boolean active) {
         isActive = active;
     }
 }

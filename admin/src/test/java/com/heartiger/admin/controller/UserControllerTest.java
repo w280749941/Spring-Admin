@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.transaction.Transactional;
+
 @AutoConfigureMockMvc
 public class UserControllerTest extends AdminApplicationTests {
 
@@ -20,10 +22,12 @@ public class UserControllerTest extends AdminApplicationTests {
     private MockMvc mockMvc;
 
     private String getUrl;
+    private String deleteUrl;
 
     @Before
     public void setup(){
         getUrl = "/admin/user";
+        deleteUrl = "/admin/user/2";
     }
 
     @Test
@@ -50,5 +54,18 @@ public class UserControllerTest extends AdminApplicationTests {
 
         Assert.assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
         Assert.assertNotNull(result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @Transactional
+    public void deleteUserByIdShouldReturn200AndSuccessMessage() throws Exception {
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete(deleteUrl)
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        Assert.assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value());
     }
 }

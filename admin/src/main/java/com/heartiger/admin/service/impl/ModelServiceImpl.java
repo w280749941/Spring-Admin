@@ -40,6 +40,11 @@ public class ModelServiceImpl<T extends Serializable, K> extends ModelRepository
     }
 
     @Override
+    public Class<T> getClazz(){
+        return super.getClazz();
+    }
+
+    @Override
     public void setClass(Class<T> clazzToSet) {
         super.setClazz(clazzToSet);
     }

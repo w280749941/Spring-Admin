@@ -46,7 +46,7 @@ public class ModelServiceTest extends AdminApplicationTests {
     @Test
     @Transactional
     public void deleteById() {
-        modelService.deleteById(4);
+        modelService.deleteById(2);
         UserInfo result = modelService.findOne(4);
         Assert.assertNull("Delete unsuccessful", result);
     }

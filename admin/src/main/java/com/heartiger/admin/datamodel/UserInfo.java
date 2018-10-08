@@ -1,6 +1,7 @@
 package com.heartiger.admin.datamodel;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -13,6 +14,7 @@ public class UserInfo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
+    @NotNull(message = "Please enter a passcode")
     private String email;
 
     private String passcode;

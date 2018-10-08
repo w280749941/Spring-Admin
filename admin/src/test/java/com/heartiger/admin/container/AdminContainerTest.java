@@ -17,6 +17,7 @@ public class AdminContainerTest extends AdminApplicationTests {
 
     @Autowired
     private AdminContainer adminContainer;
+
     @PersistenceContext
     private EntityManager entityManager;
 
