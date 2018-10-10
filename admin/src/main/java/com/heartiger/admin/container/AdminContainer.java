@@ -17,10 +17,11 @@ public class AdminContainer {
         this.hm = new HashMap<>();
     }
 
-    public <T extends Serializable, K> void register(String name, Class<T> clazz, Class<K> idClazz){
+    public <T extends Serializable, K> void register(String name, Class<T> clazz, Class<K> idClazz, String idProperty){
         ModelService<T, K> modelService = new ModelServiceImpl<>();
         modelService.setClass(clazz);
         modelService.setIdClazz(idClazz);
+        modelService.setIdProperty(idProperty);
         hm.put(name, modelService);
     }
 

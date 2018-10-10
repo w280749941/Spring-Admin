@@ -11,6 +11,18 @@ import java.util.List;
 @Service
 public class ModelServiceImpl<T extends Serializable, K> extends ModelRepository<T, K> implements ModelService<T, K> {
 
+    private String idProperty;
+
+    @Override
+    public String getIdProperty() {
+        return idProperty;
+    }
+
+    @Override
+    public void setIdProperty(String idProperty) {
+        this.idProperty = idProperty;
+    }
+
     @Override
     public T findOne(K id) {
         return super.findOne(id);

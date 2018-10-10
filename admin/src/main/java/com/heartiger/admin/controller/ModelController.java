@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
@@ -73,17 +74,23 @@ public class ModelController {
         modelService.delete(modelService.findOne(parsedId));
     }
 
+    //TODO REPLACE RESPONSE WITH RESPONSE DTO.
+    //TODO ADD TEST FOR CONTROLLERS.
     @PostMapping("/{entity}")
     @Transactional
-    public <T extends Serializable, K> T create(@PathVariable("entity") String entity,
-                                                @RequestBody Object str){
+    public <T extends Serializable, K> T createEntity(@PathVariable("entity") String entity,
+                                                @RequestBody Object requestBody) throws NoSuchFieldException, IllegalAccessException {
 
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
             return null;
         modelService.setEntityManager(this.entityManager);
 
-        T entityToCreate = objectMapper.convertValue(str, modelService.getClazz());
+        T entityToCreate = objectMapper.convertValue(requestBody, modelService.getClazz());
+
+        Object idValue = getId(modelService, entityToCreate);
+        if(idValue != null) //"Please provide an entity without an ID to create"
+            return null;
 
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(entityToCreate);
 
@@ -91,17 +98,44 @@ public class ModelController {
             System.out.println(constraintViolation.getMessage());
         }
 
+        if(constraintViolations.size() > 0)
+            return null;
+
         return modelService.create(entityToCreate);
     }
 
-    @PostMapping("/static/{entity}")
+    @PutMapping("/{entity}")
     @Transactional
-    public RoleInfo createbb(@PathVariable("entity") String entity, @RequestBody RoleInfo str){
+    public <T extends Serializable, K> T updateEntity(@PathVariable("entity") String entity,
+                                                @RequestBody Object requestBody) throws NoSuchFieldException, IllegalAccessException {
 
-        ModelService<RoleInfo, Integer> modelService = adminContainer.getService(entity);
+        ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
             return null;
         modelService.setEntityManager(this.entityManager);
-        return modelService.create(str);
+
+        T entityToUpdate = objectMapper.convertValue(requestBody, modelService.getClazz());
+
+        Object idValue = getId(modelService, entityToUpdate);
+
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(entityToUpdate);
+
+        for(ConstraintViolation constraintViolation : constraintViolations){
+            System.out.println(constraintViolation.getMessage());
+        }
+
+        if(constraintViolations.size() > 0)
+            return null;
+
+        if(idValue == null)
+            return modelService.create(entityToUpdate);
+
+        return modelService.update(entityToUpdate);
+    }
+
+    private <T extends Serializable, K> Object getId(ModelService<T, K> modelService, T entityToUpdate) throws NoSuchFieldException, IllegalAccessException {
+        Field field = entityToUpdate.getClass().getDeclaredField(modelService.getIdProperty());
+        field.setAccessible(true);
+        return field.get(entityToUpdate);
     }
 }

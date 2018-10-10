@@ -24,8 +24,8 @@ public class AdminContainerTest extends AdminApplicationTests {
     @Before
     public void setup(){
         //adminContainer = new AdminContainer();
-        adminContainer.register("user", UserInfo.class, Integer.class);
-        adminContainer.register("role", RoleInfo.class, Integer.class);
+        adminContainer.register("user", UserInfo.class, Integer.class, "userId");
+        adminContainer.register("role", RoleInfo.class, Integer.class, "roleId");
     }
 
     @Test

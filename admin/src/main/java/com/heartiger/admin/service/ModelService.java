@@ -33,4 +33,8 @@ public interface ModelService<T extends Serializable, K> {
     Class<K> getIdClazz();
 
     void setIdClazz(Class<K> idClazz);
+
+    void setIdProperty(String idProperty);
+
+    String getIdProperty();
 }
