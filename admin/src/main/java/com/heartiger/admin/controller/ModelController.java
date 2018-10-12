@@ -2,10 +2,14 @@ package com.heartiger.admin.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heartiger.admin.container.AdminContainer;
-import com.heartiger.admin.datamodel.RoleInfo;
+import com.heartiger.admin.dto.ResponseDTO;
+import com.heartiger.admin.enums.ResultEnum;
 import com.heartiger.admin.service.ModelService;
 import com.heartiger.admin.utils.IdTypeConverter;
+import com.heartiger.admin.utils.ResultDTOUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
@@ -15,7 +19,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -39,79 +42,89 @@ public class ModelController {
     }
 
     @GetMapping("/{entity}/{id}")
-    public <T extends Serializable, K> T findEntityById(@PathVariable("entity") String entity,
-                                                               @PathVariable("id") String id){
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> findEntityById(@PathVariable("entity") String entity,
+                                                                                  @PathVariable("id") String id){
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
-            return null;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
         K parsedId = IdTypeConverter.convert(id, modelService.getIdClazz());
         if(parsedId == null)
-            return null;
-        return modelService.findOne(parsedId);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.ENTRY_NOT_FOUND));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResultDTOUtil.success(modelService.findOne(parsedId)));
     }
 
 
     @GetMapping("/{entity}")
-    public <T extends Serializable, K> List<T> findAllEntities(@PathVariable("entity") String entity){
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> findAllEntities(@PathVariable("entity") String entity){
         ModelService<T, K> modelService = adminContainer.getService(entity);
+        if(modelService == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
-        return modelService.findAll();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResultDTOUtil.success(modelService.findAll()));
     }
 
     @DeleteMapping("/{entity}/{id}")
     @Transactional
-    public <T extends Serializable, K> void deleteEntityById(@PathVariable("entity") String entity,
-                                                        @PathVariable("id") String id){
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> deleteEntityById(@PathVariable("entity") String entity,
+                                                                                    @PathVariable("id") String id){
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
-            return;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
         K parsedId = IdTypeConverter.convert(id, modelService.getIdClazz());
         if(parsedId == null)
-            return;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.ENTRY_NOT_FOUND));;
 
         modelService.delete(modelService.findOne(parsedId));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResultDTOUtil.success());
     }
 
-    //TODO REPLACE RESPONSE WITH RESPONSE DTO.
-    //TODO ADD TEST FOR CONTROLLERS.
     @PostMapping("/{entity}")
     @Transactional
-    public <T extends Serializable, K> T createEntity(@PathVariable("entity") String entity,
-                                                @RequestBody Object requestBody) throws NoSuchFieldException, IllegalAccessException {
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> createEntity(@PathVariable("entity") String entity,
+                                                                                @RequestBody Object requestBody) throws NoSuchFieldException, IllegalAccessException {
 
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
-            return null;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
 
         T entityToCreate = objectMapper.convertValue(requestBody, modelService.getClazz());
 
-        Object idValue = getId(modelService, entityToCreate);
-        if(idValue != null) //"Please provide an entity without an ID to create"
-            return null;
-
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(entityToCreate);
 
-        for(ConstraintViolation constraintViolation : constraintViolations){
-            System.out.println(constraintViolation.getMessage());
+        StringBuilder sb = new StringBuilder();
+        for(ConstraintViolation constraintViolation : constraintViolations)
+        {
+            sb.append(constraintViolation.getMessage());
+            sb.append(System.getProperty("line.separator"));
         }
-
         if(constraintViolations.size() > 0)
-            return null;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(400, sb.toString()));
 
-        return modelService.create(entityToCreate);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResultDTOUtil.success(modelService.create(entityToCreate)));
     }
 
     @PutMapping("/{entity}")
     @Transactional
-    public <T extends Serializable, K> T updateEntity(@PathVariable("entity") String entity,
-                                                @RequestBody Object requestBody) throws NoSuchFieldException, IllegalAccessException {
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> updateEntity(@PathVariable("entity") String entity, @RequestBody Object requestBody) throws NoSuchFieldException, IllegalAccessException {
 
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
-            return null;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
 
         T entityToUpdate = objectMapper.convertValue(requestBody, modelService.getClazz());
@@ -120,17 +133,22 @@ public class ModelController {
 
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(entityToUpdate);
 
-        for(ConstraintViolation constraintViolation : constraintViolations){
-            System.out.println(constraintViolation.getMessage());
+        StringBuilder sb = new StringBuilder();
+        for(ConstraintViolation constraintViolation : constraintViolations)
+        {
+            sb.append(constraintViolation.getMessage());
+            sb.append(System.getProperty("line.separator"));
         }
-
         if(constraintViolations.size() > 0)
-            return null;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(400, sb.toString()));
 
         if(idValue == null)
-            return modelService.create(entityToUpdate);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ResultDTOUtil.success(modelService.create(entityToUpdate)));
 
-        return modelService.update(entityToUpdate);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResultDTOUtil.success(modelService.update(entityToUpdate)));
     }
 
     private <T extends Serializable, K> Object getId(ModelService<T, K> modelService, T entityToUpdate) throws NoSuchFieldException, IllegalAccessException {

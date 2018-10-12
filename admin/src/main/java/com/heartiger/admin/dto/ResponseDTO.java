@@ -1,5 +1,7 @@
 package com.heartiger.admin.dto;
 
+import com.heartiger.admin.enums.ResultEnum;
+
 import java.io.Serializable;
 
 public class ResponseDTO<T> implements Serializable {
@@ -15,6 +17,12 @@ public class ResponseDTO<T> implements Serializable {
         this.code = code;
         this.message = message;
         this.data = data;
+    }
+
+    public ResponseDTO(ResultEnum resultEnum) {
+        this.code = resultEnum.getCode();
+        this.message = resultEnum.getMessage();
+        this.data = null;
     }
 
     public Integer getCode() {

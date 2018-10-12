@@ -24,3 +24,5 @@ public class AdminApplication {
 		SpringApplication.run(AdminApplication.class, args);
 	}
 }
+
+// TODO use memory database. Make test more generic.
