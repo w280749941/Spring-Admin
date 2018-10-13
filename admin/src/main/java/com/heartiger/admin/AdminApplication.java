@@ -16,13 +16,11 @@ public class AdminApplication {
 	@Autowired
 	public AdminApplication(AdminContainer adminContainer) {
 		this.adminContainer = adminContainer;
-		this.adminContainer.register("user", UserInfo.class, Integer.class);
-		this.adminContainer.register("role", RoleInfo.class, Integer.class);
+		this.adminContainer.register("user", UserInfo.class);
+		this.adminContainer.register("role", RoleInfo.class);
 	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(AdminApplication.class, args);
 	}
 }
-
-// TODO use memory database. Make test more generic.

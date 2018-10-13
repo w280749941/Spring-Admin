@@ -49,7 +49,15 @@ public class ModelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
-        K parsedId = IdTypeConverter.convert(id, modelService.getIdClazz());
+
+        K parsedId;
+        try {
+            parsedId = IdTypeConverter.convert(id, modelService.getIdClazz());
+        } catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.PARAMS_ERROR));
+        }
+
         if(parsedId == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(ResultEnum.ENTRY_NOT_FOUND));
@@ -78,12 +86,25 @@ public class ModelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
-        K parsedId = IdTypeConverter.convert(id, modelService.getIdClazz());
+
+        K parsedId;
+        try {
+            parsedId = IdTypeConverter.convert(id, modelService.getIdClazz());
+        } catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.PARAMS_ERROR));
+        }
+
         if(parsedId == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ResultDTOUtil.error(ResultEnum.ENTRY_NOT_FOUND));;
+                    .body(ResultDTOUtil.error(ResultEnum.ENTRY_NOT_FOUND));
 
-        modelService.delete(modelService.findOne(parsedId));
+        T entityFound = modelService.findOne(parsedId);
+        if(entityFound == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.ENTRY_NOT_FOUND));
+
+        modelService.delete(entityFound);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResultDTOUtil.success());
     }
@@ -99,7 +120,13 @@ public class ModelController {
                     .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
 
-        T entityToCreate = objectMapper.convertValue(requestBody, modelService.getClazz());
+        T entityToCreate;
+        try {
+            entityToCreate = objectMapper.convertValue(requestBody, modelService.getClazz());
+        } catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.PARAMS_ERROR));
+        }
 
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(entityToCreate);
 
@@ -127,7 +154,13 @@ public class ModelController {
                     .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
 
-        T entityToUpdate = objectMapper.convertValue(requestBody, modelService.getClazz());
+        T entityToUpdate;
+        try {
+            entityToUpdate = objectMapper.convertValue(requestBody, modelService.getClazz());
+        } catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.PARAMS_ERROR));
+        }
 
         Object idValue = getId(modelService, entityToUpdate);
 

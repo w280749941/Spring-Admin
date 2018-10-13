@@ -23,18 +23,18 @@ public class AdminContainerTest extends AdminApplicationTests {
 
     @Before
     public void setup(){
-        adminContainer.register("user", UserInfo.class, Integer.class);
-        adminContainer.register("role", RoleInfo.class, Integer.class);
+        adminContainer.register("user", UserInfo.class);
+        adminContainer.register("role", RoleInfo.class);
     }
 
     @Test
     public void findOne() {
-        ModelService userService = adminContainer.getService("user");
-        ModelService roleService = adminContainer.getService("role");
+        ModelService<UserInfo, Integer> userService = adminContainer.getService("user");
+        ModelService<RoleInfo, Integer> roleService = adminContainer.getService("role");
         userService.setEntityManager(entityManager);
         roleService.setEntityManager(entityManager);
-        Object userInfo = userService.findOne(2);
-        Object roleInfo = roleService.findOne(1);
+        UserInfo userInfo = userService.findOne(2);
+        RoleInfo roleInfo = roleService.findOne(1);
         Assert.assertNotNull("Returned a null object", userInfo);
         Assert.assertNotNull("Returned a null object", roleInfo);
     }

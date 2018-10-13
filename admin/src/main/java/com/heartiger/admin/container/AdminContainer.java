@@ -23,27 +23,27 @@ public class AdminContainer {
         this.hm = new HashMap<>();
     }
 
-    public <T extends Serializable, K> void register(String name, Class<T> clazz, Class<K> idClazz){
+    public <T extends Serializable, K> void register(String name, Class<T> clazz, Class<K> idClazz, String idProperty){
+
+        ModelService<T, K> modelService = new ModelServiceImpl<>();
+        modelService.setClass(clazz);
+        modelService.setIdClazz(idClazz);
+        modelService.setIdProperty(idProperty);
+        hm.put(name, modelService);
+    }
+
+    public <T extends Serializable, K> void register(String name, Class<T> clazz){
 
         Reflections r = new Reflections(clazz.getName(), new FieldAnnotationsScanner());
         Set<Field> fields = r.getFieldsAnnotatedWith(Id.class);
         ModelService<T, K> modelService = new ModelServiceImpl<>();
-
-        for(Field field : fields){
-            if(field.getType() == idClazz)
-            {
-                modelService.setIdProperty(field.getName());
-                break;
-            }
-
+        for (Field field : fields) {
+            modelService.setIdProperty(field.getName());
+            modelService.setIdClazz((Class<K>) field.getType());
+            break;
         }
         modelService.setClass(clazz);
-        modelService.setIdClazz(idClazz);
         hm.put(name, modelService);
-    }
-
-    public Map<String, ModelService> getContainer(){
-        return this.hm;
     }
 
     public <T extends Serializable, K> ModelService<T, K> getService(String name){
