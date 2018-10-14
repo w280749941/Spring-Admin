@@ -5,6 +5,7 @@ import com.heartiger.admin.container.AdminContainer;
 import com.heartiger.admin.dto.ResponseDTO;
 import com.heartiger.admin.enums.ResultEnum;
 import com.heartiger.admin.service.ModelService;
+import com.heartiger.admin.service.PageableService;
 import com.heartiger.admin.utils.IdTypeConverter;
 import com.heartiger.admin.utils.ResultDTOUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,5 +189,24 @@ public class ModelController {
         Field field = entityToUpdate.getClass().getDeclaredField(modelService.getIdProperty());
         field.setAccessible(true);
         return field.get(entityToUpdate);
+    }
+
+    @GetMapping("/{entity}/page")
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> findPages(@PathVariable("entity") String entity, @RequestParam int size, @RequestParam int page){
+        ModelService<T, K> modelService = adminContainer.getService(entity);
+        if(modelService == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
+        modelService.setEntityManager(this.entityManager);
+
+        PageableService<T> pageableService = modelService.getPageableService();
+        if(pageableService == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultDTOUtil.error(ResultEnum.SERVER_ERROR));
+
+        pageableService.init(size);
+        pageableService.setCurrentPage(--page);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResultDTOUtil.success(pageableService.getCurrentResults()));
     }
 }

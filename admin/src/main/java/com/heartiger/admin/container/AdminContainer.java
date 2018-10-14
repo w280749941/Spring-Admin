@@ -32,16 +32,17 @@ public class AdminContainer {
         hm.put(name, modelService);
     }
 
-    public <T extends Serializable, K> void register(String name, Class<T> clazz){
+    public <T extends Serializable, K> void register(String name, Class<T> clazz) throws Exception {
 
         Reflections r = new Reflections(clazz.getName(), new FieldAnnotationsScanner());
         Set<Field> fields = r.getFieldsAnnotatedWith(Id.class);
         ModelService<T, K> modelService = new ModelServiceImpl<>();
-        for (Field field : fields) {
-            modelService.setIdProperty(field.getName());
-            modelService.setIdClazz((Class<K>) field.getType());
-            break;
-        }
+        if(fields.size() == 0)
+            throw new Exception("Can't find any field with ID annotation in " + clazz.getName());
+
+        Field field = fields.iterator().next();
+        modelService.setIdProperty(field.getName());
+        modelService.setIdClazz((Class<K>) field.getType());
         modelService.setClass(clazz);
         hm.put(name, modelService);
     }

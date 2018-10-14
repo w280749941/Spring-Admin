@@ -14,7 +14,7 @@ public class AdminApplication {
 	private final AdminContainer adminContainer;
 
 	@Autowired
-	public AdminApplication(AdminContainer adminContainer) {
+	public AdminApplication(AdminContainer adminContainer) throws Exception {
 		this.adminContainer = adminContainer;
 		this.adminContainer.register("user", UserInfo.class);
 		this.adminContainer.register("role", RoleInfo.class);

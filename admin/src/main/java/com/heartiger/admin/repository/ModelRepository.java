@@ -14,54 +14,68 @@ public abstract class ModelRepository<T extends Serializable, K>{
 
     private Class<K> idClazz;
 
-    public Class<K> getIdClazz() {
+    private String idProperty;
+
+    protected String getIdProperty() {
+        return idProperty;
+    }
+
+    protected void setIdProperty(String idProperty) {
+        this.idProperty = idProperty;
+    }
+
+    protected Class<K> getIdClazz() {
         return idClazz;
     }
 
-    public void setIdClazz(Class<K> idClazz) {
+    protected void setIdClazz(Class<K> idClazz) {
         this.idClazz = idClazz;
     }
 
-    public Class<T> getClazz(){
+    protected Class<T> getClazz(){
         return this.clazz;
     }
 
-    public void setClazz(Class<T> clazzToSet ) {
+    protected void setClazz(Class<T> clazzToSet) {
         this.clazz = clazzToSet;
     }
 
-    public T findOne( K id ){
+    protected T findOne( K id ){
         return entityManager.find( clazz, id );
     }
 
-    public List<T> findAll(){
+    protected List<T> findAll(){
         return entityManager.createQuery( "from " + clazz.getName() )
                 .getResultList();
     }
 
-    public T save(T entity){
+    protected T save(T entity){
         entityManager.persist( entity );
         entityManager.flush();
         return entity;
     }
 
-    public T update(T entity){
+    protected T update(T entity){
         entityManager.merge(entity);
         entityManager.flush();
         return entity;
     }
 
-    public void delete(T entity){
+    protected void delete(T entity){
         entityManager.remove(entity);
     }
 
-    public void deleteById(K entityId) {
+    protected void deleteById(K entityId) {
         T entity = this.findOne(entityId);
         delete(entity);
     }
 
-    public void setEntityManager(EntityManager entityManager){
+    protected void setEntityManager(EntityManager entityManager){
         if(this.entityManager == null)
             this.entityManager = entityManager;
+    }
+
+    protected EntityManager getEntityManager(){
+        return this.entityManager;
     }
 }

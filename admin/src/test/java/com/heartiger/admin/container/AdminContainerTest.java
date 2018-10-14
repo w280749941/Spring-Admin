@@ -22,7 +22,7 @@ public class AdminContainerTest extends AdminApplicationTests {
     private EntityManager entityManager;
 
     @Before
-    public void setup(){
+    public void setup() throws Exception {
         adminContainer.register("user", UserInfo.class);
         adminContainer.register("role", RoleInfo.class);
     }

@@ -20,7 +20,7 @@ public interface ModelService<T extends Serializable, K> {
 
     T update(final T entity);
 
-    void delete(final T entity);
+    void delete(T entityToDelete);
 
     void deleteById(final K entityId);
 
@@ -37,4 +37,8 @@ public interface ModelService<T extends Serializable, K> {
     void setIdProperty(String idProperty);
 
     String getIdProperty();
+
+    PageableService<T> getPageableService();
+
+    EntityManager getEntityManager();
 }

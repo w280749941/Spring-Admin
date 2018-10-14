@@ -2,8 +2,10 @@ package com.heartiger.admin.service.impl;
 
 import com.heartiger.admin.repository.ModelRepository;
 import com.heartiger.admin.service.ModelService;
+import com.heartiger.admin.service.PageableService;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
@@ -11,16 +13,24 @@ import java.util.List;
 @Service
 public class ModelServiceImpl<T extends Serializable, K> extends ModelRepository<T, K> implements ModelService<T, K> {
 
-    private String idProperty;
-
     @Override
     public String getIdProperty() {
-        return idProperty;
+        return super.getIdProperty();
+    }
+
+    @Override
+    public PageableService<T> getPageableService() {
+        return new PageableService<>(getEntityManager(), getClazz());
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return super.getEntityManager();
     }
 
     @Override
     public void setIdProperty(String idProperty) {
-        this.idProperty = idProperty;
+        super.setIdProperty(idProperty);
     }
 
     @Override
@@ -41,6 +51,11 @@ public class ModelServiceImpl<T extends Serializable, K> extends ModelRepository
     }
 
     @Override
+    public void delete(T entityToDelete) {
+        super.delete(entityToDelete);
+    }
+
+    @Override
     @Transactional
     public void deleteById(K entityId) {
         super.deleteById(entityId);
@@ -57,6 +72,11 @@ public class ModelServiceImpl<T extends Serializable, K> extends ModelRepository
     }
 
     @Override
+    public void setEntityManager(EntityManager entityManager) {
+        super.setEntityManager(entityManager);
+    }
+
+    @Override
     public void setClass(Class<T> clazzToSet) {
         super.setClazz(clazzToSet);
     }
@@ -70,4 +90,5 @@ public class ModelServiceImpl<T extends Serializable, K> extends ModelRepository
     public void setIdClazz(Class<K> idClazz){
         super.setIdClazz(idClazz);
     }
+
 }

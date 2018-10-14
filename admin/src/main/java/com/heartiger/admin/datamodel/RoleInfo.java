@@ -55,4 +55,14 @@ public class RoleInfo implements Serializable {
     public void setIsActive(Boolean active) {
         isActive = active;
     }
+
+    @Override
+    public String toString() {
+        return "RoleInfo{" +
+                "roleId=" + roleId +
+                ", roleName='" + roleName + '\'' +
+                ", isDeleted=" + isDeleted +
+                ", isActive=" + isActive +
+                '}';
+    }
 }
