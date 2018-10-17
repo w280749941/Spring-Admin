@@ -18,25 +18,30 @@ public class AdminContainerTest extends AdminApplicationTests {
     @Autowired
     private AdminContainer adminContainer;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Before
-    public void setup() throws Exception {
-        adminContainer.register("user", UserInfo.class);
-        adminContainer.register("role", RoleInfo.class);
+    @Test
+    public void registerFullParamsShouldReturnSuccess(){
+        adminContainer.clearContainer();
+        adminContainer.register("user", UserInfo.class, Integer.class, "userId");
+        adminContainer.register("role", RoleInfo.class, Integer.class, "roleId");
+        Assert.assertNotNull(adminContainer.getService("user"));
+        Assert.assertNotNull(adminContainer.getService("role"));
     }
 
     @Test
-    public void findOne() {
-        ModelService<UserInfo, Integer> userService = adminContainer.getService("user");
-        ModelService<RoleInfo, Integer> roleService = adminContainer.getService("role");
-        userService.setEntityManager(entityManager);
-        roleService.setEntityManager(entityManager);
-        UserInfo userInfo = userService.findOne(2);
-        RoleInfo roleInfo = roleService.findOne(1);
-        Assert.assertNotNull("Returned a null object", userInfo);
-        Assert.assertNotNull("Returned a null object", roleInfo);
+    public void registerShouldReturnSuccess() throws Exception {
+        adminContainer.clearContainer();
+        adminContainer.register("user", UserInfo.class);
+        adminContainer.register("role", RoleInfo.class);
+        Assert.assertNotNull(adminContainer.getService("user"));
+        Assert.assertNotNull(adminContainer.getService("role"));
     }
 
+    @Test
+    public void registerFullParamsWithWrongPropertyShouldReturnNull() {
+        adminContainer.clearContainer();
+        adminContainer.register("user", UserInfo.class, Integer.class, "userId1");
+        adminContainer.register("role", RoleInfo.class, Integer.class, "roleId1");
+        Assert.assertNull(adminContainer.getService("user"));
+        Assert.assertNull(adminContainer.getService("role"));
+    }
 }

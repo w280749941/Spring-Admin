@@ -2,16 +2,14 @@ package com.heartiger.admin.container;
 
 import com.heartiger.admin.service.ModelService;
 import com.heartiger.admin.service.impl.ModelServiceImpl;
-import org.reflections.Reflections;
-import org.reflections.scanners.FieldAnnotationsScanner;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 
 @Component
@@ -34,22 +32,31 @@ public class AdminContainer {
 
     public <T extends Serializable, K> void register(String name, Class<T> clazz) throws Exception {
 
-        Reflections r = new Reflections(clazz.getName(), new FieldAnnotationsScanner());
-        Set<Field> fields = r.getFieldsAnnotatedWith(Id.class);
         ModelService<T, K> modelService = new ModelServiceImpl<>();
-        if(fields.size() == 0)
-            throw new Exception("Can't find any field with ID annotation in " + clazz.getName());
-
-        Field field = fields.iterator().next();
-        modelService.setIdProperty(field.getName());
-        modelService.setIdClazz((Class<K>) field.getType());
-        modelService.setClass(clazz);
-        hm.put(name, modelService);
+        for(Field field : clazz.getDeclaredFields()){
+            Annotation[] annotations = field.getDeclaredAnnotations();
+            for (Annotation annotation : annotations)
+            {
+                if(annotation.annotationType().equals(Id.class))
+                {
+                    modelService.setIdProperty(field.getName());
+                    modelService.setIdClazz((Class<K>) field.getType());
+                    modelService.setClass(clazz);
+                    hm.put(name, modelService);
+                    return;
+                }
+            }
+        }
+        throw new Exception("Can't find any field with ID annotation in " + clazz.getName());
     }
 
     public <T extends Serializable, K> ModelService<T, K> getService(String name){
         if(this.hm.containsKey(name))
             return this.hm.get(name);
         return null;
+    }
+
+    public void clearContainer(){
+        this.hm.clear();
     }
 }

@@ -3,6 +3,8 @@ package com.heartiger.admin.datamodel;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 @Entity
 @Table(name = "roles")
