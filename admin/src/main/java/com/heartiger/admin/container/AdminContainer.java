@@ -21,8 +21,13 @@ public class AdminContainer {
         this.hm = new HashMap<>();
     }
 
-    public <T extends Serializable, K> void register(String name, Class<T> clazz, Class<K> idClazz, String idProperty){
-
+    public <T extends Serializable, K> void register(String name, Class<T> clazz, Class<K> idClazz, String idProperty) throws Exception {
+        try {
+            if(!clazz.getDeclaredField(idProperty).getType().equals(idClazz))
+                throw new Exception("Id class and id name doesn't match");
+        } catch (NoSuchFieldException e) {
+            throw e;
+        }
         ModelService<T, K> modelService = new ModelServiceImpl<>();
         modelService.setClass(clazz);
         modelService.setIdClazz(idClazz);

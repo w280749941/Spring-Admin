@@ -19,7 +19,7 @@ public class AdminContainerTest extends AdminApplicationTests {
     private AdminContainer adminContainer;
 
     @Test
-    public void registerFullParamsShouldReturnSuccess(){
+    public void registerFullParamsShouldReturnSuccess() throws Exception {
         adminContainer.clearContainer();
         adminContainer.register("user", UserInfo.class, Integer.class, "userId");
         adminContainer.register("role", RoleInfo.class, Integer.class, "roleId");
@@ -37,11 +37,14 @@ public class AdminContainerTest extends AdminApplicationTests {
     }
 
     @Test
-    public void registerFullParamsWithWrongPropertyShouldReturnNull() {
+    public void registerFullParamsWithWrongPropertyShouldThrowException(){
         adminContainer.clearContainer();
-        adminContainer.register("user", UserInfo.class, Integer.class, "userId1");
-        adminContainer.register("role", RoleInfo.class, Integer.class, "roleId1");
-        Assert.assertNull(adminContainer.getService("user"));
-        Assert.assertNull(adminContainer.getService("role"));
+        try {
+            adminContainer.register("user", UserInfo.class, Integer.class, "userId1");
+            adminContainer.register("role", RoleInfo.class, Integer.class, "roleId1");
+        } catch (Exception e) {
+            Assert.assertNull(adminContainer.getService("user"));
+            Assert.assertNull(adminContainer.getService("role"));
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.heartiger.admin.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.heartiger.admin.container.AdminContainer;
 import com.heartiger.admin.dto.ResponseDTO;
 import com.heartiger.admin.enums.ResultEnum;
@@ -9,8 +10,10 @@ import com.heartiger.admin.service.PageableService;
 import com.heartiger.admin.utils.IdTypeConverter;
 import com.heartiger.admin.utils.ResultDTOUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
@@ -20,6 +23,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -30,16 +35,19 @@ public class ModelController {
     private final ObjectMapper objectMapper;
     private final Validator validator;
 
+    private final Gson gson;
+
     @PersistenceContext
     private final EntityManager entityManager;
 
     @Autowired
     public ModelController(AdminContainer adminContainer, EntityManager entityManager,
-                           ObjectMapper objectMapper, Validator validator){
+                           ObjectMapper objectMapper, Validator validator, Gson gson){
         this.adminContainer = adminContainer;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
         this.validator = validator;
+        this.gson = gson;
     }
 
     @GetMapping("/{entity}/{id}")
@@ -113,7 +121,7 @@ public class ModelController {
     @PostMapping("/{entity}")
     @Transactional
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> createEntity(@PathVariable("entity") String entity,
-                                                                                @RequestBody Object requestBody) throws NoSuchFieldException, IllegalAccessException {
+                                                                                @RequestBody Object requestBody) {
 
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
@@ -147,7 +155,9 @@ public class ModelController {
 
     @PutMapping("/{entity}")
     @Transactional
-    public <T extends Serializable, K> ResponseEntity<ResponseDTO> updateEntity(@PathVariable("entity") String entity, @RequestBody Object requestBody) throws NoSuchFieldException, IllegalAccessException {
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> updateEntity(
+            @PathVariable("entity") String entity, @RequestBody Object requestBody)
+            throws NoSuchFieldException, IllegalAccessException {
 
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
@@ -185,14 +195,38 @@ public class ModelController {
                 .body(ResultDTOUtil.success(modelService.update(entityToUpdate)));
     }
 
-    private <T extends Serializable, K> Object getId(ModelService<T, K> modelService, T entityToUpdate) throws NoSuchFieldException, IllegalAccessException {
+    private <T extends Serializable, K> Object getId(ModelService<T, K> modelService, T entityToUpdate)
+            throws NoSuchFieldException, IllegalAccessException {
         Field field = entityToUpdate.getClass().getDeclaredField(modelService.getIdProperty());
         field.setAccessible(true);
         return field.get(entityToUpdate);
     }
 
+    @GetMapping("/{entity}/page/all")
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> findPages(@PathVariable("entity") String entity,
+                                                                             @RequestParam int size){
+        ModelService<T, K> modelService = adminContainer.getService(entity);
+        if(modelService == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
+        modelService.setEntityManager(this.entityManager);
+
+        PageableService<T> pageableService = modelService.getPageableService();
+        if(pageableService == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResultDTOUtil.error(ResultEnum.SERVER_ERROR));
+
+        pageableService.init(size);
+        pageableService.setCurrentPage(0);
+        Map<Object, Object> hm = new HashMap<>();
+        hm.put("pages", String.valueOf(pageableService.getMaxPages()));
+        hm.put("content", pageableService.getCurrentResults());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResultDTOUtil.success(hm));
+    }
+
     @GetMapping("/{entity}/page")
-    public <T extends Serializable, K> ResponseEntity<ResponseDTO> findPages(@PathVariable("entity") String entity, @RequestParam int size, @RequestParam int page){
+    public <T extends Serializable, K> ResponseEntity<ResponseDTO> findPages(@PathVariable("entity") String entity,
+                                                                             @RequestParam int size, @RequestParam int page){
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

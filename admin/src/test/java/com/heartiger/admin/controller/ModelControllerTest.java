@@ -1,13 +1,9 @@
 package com.heartiger.admin.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.heartiger.admin.AdminApplicationTests;
 import com.heartiger.admin.datamodel.UserInfo;
 import com.heartiger.admin.dto.ResponseDTO;
-import net.minidev.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,9 +29,6 @@ public class ModelControllerTest extends AdminApplicationTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private Gson gson;
 
     private Logger logger = LoggerFactory.getLogger(ModelControllerTest.class);
@@ -43,34 +36,31 @@ public class ModelControllerTest extends AdminApplicationTests {
     private String getUrl;
     private String deleteUrl;
     private String findUrl;
-    private String urlPrefix;
+    private String pageUrl;
+    private String pageAllUrl;
 
     @Before
     public void setup(){
-        urlPrefix = "/admin/user/";
+        String urlPrefix = "/admin/user/";
         getUrl = urlPrefix;
         findUrl = urlPrefix + "2";
         deleteUrl = urlPrefix + "2";
+        pageUrl = urlPrefix + "page";
+        pageAllUrl = urlPrefix + "page/all";
     }
 
     @Test
     public void findAllShouldReturnStatusCode200AndNotNull() throws Exception {
-
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(getUrl)
-                .accept(MediaType.APPLICATION_JSON);
-
-        Object[] results = parseJsonResult(requestBuilder);
-        MvcResult result = (MvcResult) results[0];
-        ResponseDTO resultDTO = (ResponseDTO) results[1];
-
-        Assert.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
-        Assert.assertNotNull(resultDTO.getData());
+        PerformGetRequestTest(getUrl);
     }
 
     @Test
     public void findOneShouldReturnStatusCode200AndNotNull() throws Exception {
 
+        PerformGetRequestTest(findUrl);
+    }
+
+    private void PerformGetRequestTest(String findUrl) throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get(findUrl)
                 .accept(MediaType.APPLICATION_JSON);
@@ -141,6 +131,41 @@ public class ModelControllerTest extends AdminApplicationTests {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .put(getUrl).contentType(MediaType.APPLICATION_JSON)
                 .content(entityToCreate)
+                .accept(MediaType.APPLICATION_JSON);
+
+        Object[] results = parseJsonResult(requestBuilder);
+        MvcResult result = (MvcResult) results[0];
+        ResponseDTO resultDTO = (ResponseDTO) results[1];
+
+        Assert.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        Assert.assertNotNull(resultDTO.getData());
+    }
+
+    @Test
+    @Transactional
+    public void PageShouldReturnStatusCode200AndNotNull() throws Exception {
+        MultiValueMap<String, String> mp = new HttpHeaders();
+        mp.add("size", "2");
+        mp.add("page", "1");
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(pageUrl).params(mp)
+                .accept(MediaType.APPLICATION_JSON);
+
+        Object[] results = parseJsonResult(requestBuilder);
+        MvcResult result = (MvcResult) results[0];
+        ResponseDTO resultDTO = (ResponseDTO) results[1];
+
+        Assert.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        Assert.assertNotNull(resultDTO.getData());
+    }
+
+    @Test
+    @Transactional
+    public void PageAllShouldReturnStatusCode200AndNotNull() throws Exception {
+        MultiValueMap<String, String> mp = new HttpHeaders();
+        mp.add("size", "2");
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(pageAllUrl).params(mp)
                 .accept(MediaType.APPLICATION_JSON);
 
         Object[] results = parseJsonResult(requestBuilder);
