@@ -1,25 +1,24 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from '../app-routing.module';
-import { CoreBodyComponent } from './body/core-body/core-body.component';
-import { CoreFooterComponent } from './footer/core-footer/core-footer.component';
-import { CoreHeaderComponent } from './header/core-header/core-header.component';
+import { BodyModule } from './body/body.module';
+import { HeaderModule } from './header/header.module';
+import { FooterModule } from './footer/footer.module';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
-    CommonModule,
     AppRoutingModule,
+    HeaderModule,
+    BodyModule,
+    FooterModule,
   ],
   declarations: [
-    CoreBodyComponent,
-    CoreFooterComponent,
-    CoreHeaderComponent,
   ],
   exports: [
     AppRoutingModule,
-    CoreBodyComponent,
-    CoreFooterComponent,
-    CoreHeaderComponent,
+    HeaderModule,
+    BodyModule,
+    FooterModule,
   ]
 })
 export class CoreModule { }

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "${admin.prefix.uri}")
 public class ModelController {

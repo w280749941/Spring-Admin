@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-
-
+import { ModelService } from 'src/app/service/model.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Food {
   value: string;
@@ -13,17 +14,25 @@ export interface Food {
   styleUrls: ['./core-body.component.css']
 })
 
-
 export class CoreBodyComponent implements OnInit {
 
-  foods: Food[] = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'}
-  ];
-  constructor() { }
+  constructor(private service$: ModelService) {}
+
+  originalData: Observable<any[]>;
+  displayedColumns: string[];
+  asyncData: Observable<any[]>;
+  RealData: Observable<any[]>;
 
   ngOnInit() {
+    this.RealData = this.service$.getData().pipe(map(x => x.data));
+    this.RealData.subscribe(v => {
+      this.displayedColumns = Object.getOwnPropertyNames(v[0]);
+    });
   }
-
+}
+export interface PeriodicElement {
+  name: string;
+  position: number;
+  weight: number;
+  symbol: string;
 }
