@@ -1,6 +1,6 @@
 package com.heartiger.admin.utils;
 
-public class IdTypeConverter {
+public class TypeConverter {
 
     public static <T> T convert(String id, Class<T> returnClass){
         try{
@@ -14,5 +14,11 @@ public class IdTypeConverter {
         } catch (NumberFormatException ex){
             return null;
         }
+    }
+
+    public static String convertToAngularTypeName(String type){
+        if(type.equals("Integer") || type.equals("Long"))
+            return "Number";
+        return type;
     }
 }

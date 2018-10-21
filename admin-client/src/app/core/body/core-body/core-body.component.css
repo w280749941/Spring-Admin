@@ -1,4 +1,14 @@
 table {
     width: 100%;
-  }
-  
+}
+mat-cell button{
+  margin-right: 8px;
+}  
+
+mat-cell {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 5em;
+}

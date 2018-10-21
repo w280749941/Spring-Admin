@@ -7,13 +7,11 @@ import com.heartiger.admin.dto.ResponseDTO;
 import com.heartiger.admin.enums.ResultEnum;
 import com.heartiger.admin.service.ModelService;
 import com.heartiger.admin.service.PageableService;
-import com.heartiger.admin.utils.IdTypeConverter;
+import com.heartiger.admin.utils.TypeConverter;
 import com.heartiger.admin.utils.ResultDTOUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
@@ -36,22 +34,19 @@ public class ModelController {
     private final ObjectMapper objectMapper;
     private final Validator validator;
 
-    private final Gson gson;
-
     @PersistenceContext
     private final EntityManager entityManager;
 
     @Autowired
     public ModelController(AdminContainer adminContainer, EntityManager entityManager,
-                           ObjectMapper objectMapper, Validator validator, Gson gson){
+                           ObjectMapper objectMapper, Validator validator){
         this.adminContainer = adminContainer;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
         this.validator = validator;
-        this.gson = gson;
     }
 
-    @GetMapping("/{entity}/{id}")
+    @GetMapping("/entity/{entity}/{id}")
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> findEntityById(@PathVariable("entity") String entity,
                                                                                   @PathVariable("id") String id){
         ModelService<T, K> modelService = adminContainer.getService(entity);
@@ -62,7 +57,7 @@ public class ModelController {
 
         K parsedId;
         try {
-            parsedId = IdTypeConverter.convert(id, modelService.getIdClazz());
+            parsedId = TypeConverter.convert(id, modelService.getIdClazz());
         } catch (Exception ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(ResultEnum.PARAMS_ERROR));
@@ -71,23 +66,21 @@ public class ModelController {
         if(parsedId == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(ResultEnum.ENTRY_NOT_FOUND));
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResultDTOUtil.success(modelService.findOne(parsedId)));
+        return ResponseEntity.ok(ResultDTOUtil.success(modelService.findOne(parsedId)));
     }
 
 
-    @GetMapping("/{entity}")
+    @GetMapping("/entity/{entity}")
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> findAllEntities(@PathVariable("entity") String entity){
         ModelService<T, K> modelService = adminContainer.getService(entity);
         if(modelService == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(ResultEnum.INVALID_ENTITY_TYPE));
         modelService.setEntityManager(this.entityManager);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResultDTOUtil.success(modelService.findAll()));
+        return ResponseEntity.ok(ResultDTOUtil.success(modelService.findAll()));
     }
 
-    @DeleteMapping("/{entity}/{id}")
+    @DeleteMapping("/entity/{entity}/{id}")
     @Transactional
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> deleteEntityById(@PathVariable("entity") String entity,
                                                                                     @PathVariable("id") String id){
@@ -99,7 +92,7 @@ public class ModelController {
 
         K parsedId;
         try {
-            parsedId = IdTypeConverter.convert(id, modelService.getIdClazz());
+            parsedId = TypeConverter.convert(id, modelService.getIdClazz());
         } catch (Exception ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(ResultEnum.PARAMS_ERROR));
@@ -115,11 +108,10 @@ public class ModelController {
                     .body(ResultDTOUtil.error(ResultEnum.ENTRY_NOT_FOUND));
 
         modelService.delete(entityFound);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResultDTOUtil.success());
+        return ResponseEntity.ok(ResultDTOUtil.success());
     }
 
-    @PostMapping("/{entity}")
+    @PostMapping("/entity/{entity}")
     @Transactional
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> createEntity(@PathVariable("entity") String entity,
                                                                                 @RequestBody Object requestBody) {
@@ -154,7 +146,7 @@ public class ModelController {
                 .body(ResultDTOUtil.success(modelService.create(entityToCreate)));
     }
 
-    @PutMapping("/{entity}")
+    @PutMapping("/entity/{entity}")
     @Transactional
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> updateEntity(
             @PathVariable("entity") String entity, @RequestBody Object requestBody)
@@ -192,8 +184,7 @@ public class ModelController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(ResultDTOUtil.success(modelService.create(entityToUpdate)));
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResultDTOUtil.success(modelService.update(entityToUpdate)));
+        return ResponseEntity.ok(ResultDTOUtil.success(modelService.update(entityToUpdate)));
     }
 
     private <T extends Serializable, K> Object getId(ModelService<T, K> modelService, T entityToUpdate)
@@ -203,7 +194,7 @@ public class ModelController {
         return field.get(entityToUpdate);
     }
 
-    @GetMapping("/{entity}/page/all")
+    @GetMapping("/entity/{entity}/page/all")
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> findPages(@PathVariable("entity") String entity,
                                                                              @RequestParam int size){
         ModelService<T, K> modelService = adminContainer.getService(entity);
@@ -221,11 +212,10 @@ public class ModelController {
         Map<Object, Object> hm = new HashMap<>();
         hm.put("pages", String.valueOf(pageableService.getMaxPages()));
         hm.put("content", pageableService.getCurrentResults());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResultDTOUtil.success(hm));
+        return ResponseEntity.ok(ResultDTOUtil.success(hm));
     }
 
-    @GetMapping("/{entity}/page")
+    @GetMapping("/entity/{entity}/page")
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> findPages(@PathVariable("entity") String entity,
                                                                              @RequestParam int size, @RequestParam int page){
         ModelService<T, K> modelService = adminContainer.getService(entity);
@@ -241,7 +231,11 @@ public class ModelController {
         pageableService.init(size);
         pageableService.setCurrentPage(--page);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResultDTOUtil.success(pageableService.getCurrentResults()));
+        return ResponseEntity.ok(ResultDTOUtil.success(pageableService.getCurrentResults()));
+    }
+
+    @GetMapping("/properties")
+    public ResponseEntity<ResponseDTO> getProperty(){
+       return ResponseEntity.ok(ResultDTOUtil.success(adminContainer.getProperties()));
     }
 }

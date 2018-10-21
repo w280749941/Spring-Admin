@@ -1,0 +1,108 @@
+[
+  {
+    "code": 0,
+    "message": "Success",
+    "data": [
+      {
+        "userId": 2,
+        "email": "Test@gmail.com",
+        "passcode": "$2a$10$NjByo4UU43j1E5K60kX18u/0ZOJs1hpdtMAhegn7sBfQHQiq.fEYi",
+        "firstName": "tester",
+        "lastName": "tester",
+        "active": true,
+        "deleted": false
+      },
+      {
+        "userId": 21,
+        "email": "Other@email.com",
+        "passcode": "soms1234word",
+        "firstName": "Good",
+        "lastName": "last",
+        "active": true,
+        "deleted": false
+      },
+      {
+        "userId": 22,
+        "email": "Another@email.com",
+        "passcode": "somePassword",
+        "firstName": null,
+        "lastName": null,
+        "active": true,
+        "deleted": false
+      }
+    ]
+  },
+  {
+    "code": 0,
+    "message": "Success",
+    "data": [
+      {
+        "roleId": 1,
+        "roleName": "asb",
+        "isDeleted": false,
+        "isActive": true
+      },
+      {
+        "roleId": 7,
+        "roleName": "user",
+        "isDeleted": false,
+        "isActive": true
+      },
+      {
+        "roleId": 27,
+        "roleName": "BigBooty",
+        "isDeleted": false,
+        "isActive": true
+      },
+      {
+        "roleId": 30,
+        "roleName": "bad Role",
+        "isDeleted": false,
+        "isActive": false
+      },
+      {
+        "roleId": 33,
+        "roleName": "new Role3",
+        "isDeleted": true,
+        "isActive": false
+      },
+      {
+        "roleId": 42,
+        "roleName": "ok Role",
+        "isDeleted": true,
+        "isActive": false
+      }
+    ]
+  },
+  {
+    "code": 0,
+    "message": "Success",
+    "data": {
+      "role": [
+        {
+          "id": "roleId"
+        },
+        {
+          "isDeleted": "Boolean",
+          "roleId": "Number",
+          "roleName": "String",
+          "isActive": "Boolean"
+        }
+      ],
+      "user": [
+        {
+          "id": "userId"
+        },
+        {
+          "firstName": "String",
+          "lastName": "String",
+          "isDeleted": "Boolean",
+          "isActive": "Boolean",
+          "userId": "Number",
+          "email": "String",
+          "passcode": "String"
+        }
+      ]
+    }
+  }
+]

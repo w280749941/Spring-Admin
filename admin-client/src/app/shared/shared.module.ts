@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule, MatPaginatorModule } from '@angular/material';
+import { MatTableModule, MatPaginatorModule, MatButtonModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
-import {MatListModule} from '@angular/material/list';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   imports: [
@@ -15,6 +15,7 @@ import {MatListModule} from '@angular/material/list';
     MatTableModule,
     MatPaginatorModule,
     MatListModule,
+    MatButtonModule,
   ],
   declarations: [],
   exports: [
@@ -25,6 +26,7 @@ import {MatListModule} from '@angular/material/list';
     MatPaginatorModule,
     HttpClientModule,
     MatListModule,
+    MatButtonModule,
   ]
 })
 export class SharedModule { }

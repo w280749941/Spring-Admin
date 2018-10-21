@@ -3,11 +3,8 @@ package com.heartiger.admin.utils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.*;
-
-public class IdTypeConverterTest {
+public class TypeConverterTest {
 
     private String numberTestString;
     private String testString;
@@ -21,7 +18,7 @@ public class IdTypeConverterTest {
     @Test
     public void convertStringNumberToIntegerShouldSuccess() {
         int expectedValue = 5;
-        Integer result = IdTypeConverter.convert(numberTestString, Integer.class);
+        Integer result = TypeConverter.convert(numberTestString, Integer.class);
         Assert.assertNotNull(result);
         Assert.assertEquals(result.intValue(), expectedValue);
     }
@@ -29,27 +26,27 @@ public class IdTypeConverterTest {
     @Test
     public void convertStringNumberToLongShouldSuccess() {
         long expectedValue = 5;
-        Long result = IdTypeConverter.convert(numberTestString, Long.class);
+        Long result = TypeConverter.convert(numberTestString, Long.class);
         Assert.assertNotNull(result);
         Assert.assertEquals(result.longValue(), expectedValue);
     }
 
     @Test
     public void convertStringNumberToStringShouldSuccess() {
-        String result = IdTypeConverter.convert(numberTestString, String.class);
+        String result = TypeConverter.convert(numberTestString, String.class);
         Assert.assertNotNull(result);
         Assert.assertEquals(result, numberTestString);
     }
 
     @Test
     public void convertStringNumberToBooleanShouldReturnNull() {
-        Boolean result = IdTypeConverter.convert(numberTestString, Boolean.class);
+        Boolean result = TypeConverter.convert(numberTestString, Boolean.class);
         Assert.assertNull(result);
     }
 
     @Test
     public void convertStringToIntegerShouldReturnNull() {
-        Integer result = IdTypeConverter.convert(testString, Integer.class);
+        Integer result = TypeConverter.convert(testString, Integer.class);
         Assert.assertNull(result);
     }
 }

@@ -1,12 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ModelService } from 'src/app/service/model.service';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-export interface Food {
-  value: string;
-  viewValue: string;
-}
+import { MatPaginator, MatTableDataSource } from '@angular/material';
 
 @Component({
   selector: 'app-core-body',
@@ -16,23 +11,20 @@ export interface Food {
 
 export class CoreBodyComponent implements OnInit {
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   constructor(private service$: ModelService) {}
 
-  originalData: Observable<any[]>;
   displayedColumns: string[];
-  asyncData: Observable<any[]>;
-  RealData: Observable<any[]>;
+  dataSource: MatTableDataSource<any[]>;
 
   ngOnInit() {
-    this.RealData = this.service$.getData().pipe(map(x => x.data));
-    this.RealData.subscribe(v => {
-      this.displayedColumns = Object.getOwnPropertyNames(v[0]);
+    this.service$.getData().pipe(map(x => x.data)).subscribe(val => {
+      this.displayedColumns = Object.getOwnPropertyNames(val[0]).slice(0, 3);
+      this.displayedColumns.push('actions');
+      this.dataSource = new MatTableDataSource<any[]>(val);
+      this.dataSource.paginator = this.paginator;
     });
+    this.service$.getEntities().subscribe(val => console.log(val));
   }
-}
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
 }

@@ -41,7 +41,7 @@ public class ModelControllerTest extends AdminApplicationTests {
 
     @Before
     public void setup(){
-        String urlPrefix = "/admin/user/";
+        String urlPrefix = "/admin/entity/user/";
         getUrl = urlPrefix;
         findUrl = urlPrefix + "2";
         deleteUrl = urlPrefix + "2";
