@@ -1,25 +1,32 @@
+<div>
+    <mat-form-field>
+        <mat-select [(value)]="selected" (selectionChange)="onSelect()">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let entityName of entityNames" [value]="entityName">{{entityName}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <p>You selected: {{selected}}</p>
+</div>
 <div class="mat-elevation-z8">
   <table mat-table [dataSource]="dataSource">
-
     <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
         <ng-template [ngIf]="disCol != 'actions'" [ngIfElse]="actions">
             <mat-header-cell *matHeaderCellDef>{{disCol}}</mat-header-cell>
-            <mat-cell *matCellDef="let element "> {{element[disCol]}}
+            <mat-cell *matCellDef="let element"> {{element[disCol]}}
             </mat-cell>
         </ng-template>
         <ng-template #actions>
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
-            <mat-cell *matCellDef> 
-                <button mat-raised-button color="primary">Detail</button>
+            <mat-cell *matCellDef="let element"> 
+                <button mat-raised-button color="primary" (click)="onClick(element)">Detail</button>
                 <button mat-raised-button color="accent">Edit</button>
                 <button mat-raised-button color="warn">Delete</button>
             </mat-cell>
         </ng-template>
     </ng-container>
-
+ 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
   </table>
   <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
-
 </div>
