@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { of } from 'rxjs';
-import { delay, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Result } from '../domain/Result.model';
 import { Entity, Property } from '../domain/Entity';
@@ -12,8 +11,8 @@ import { Entity, Property } from '../domain/Entity';
 export class ModelService {
   constructor(private http: HttpClient) {}
 
-  getData(): Observable<Result> {
-    return this.http.get<Result>('http://localhost:8080/admin/role/'); // .pipe(map(val => val['data']));
+  getData(entity: string): Observable<Result> {
+    return this.http.get<Result>(`http://localhost:8080/admin/entity/${entity}/`); // .pipe(map(val => val['data']));
   }
 
   getEntities(): Observable<Entity[]> {
@@ -39,24 +38,6 @@ export class ModelService {
       });
       return entities;
     }));
-  }
-
-  getPropertiess() {
-    this.http.get<Result>('http://localhost:8080/admin/properties/').pipe(map(x => x.data)).subscribe(val => {
-      const entitieNames = Object.getOwnPropertyNames(val);
-      entitieNames.forEach(x => {
-        const entity = val[x];
-        console.log(entity);
-        console.log('id: ' + entity[0]['id']);
-        const properties = Object.getOwnPropertyNames(entity[1]);
-        const dict = {};
-        properties.forEach(y => {
-          console.log(y);
-          dict[y] = entity[1][y];
-        });
-        console.log('My dictionary: ' + dict['isDeleted']);
-      });
-    });
   }
 }
 
