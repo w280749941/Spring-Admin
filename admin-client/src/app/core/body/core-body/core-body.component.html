@@ -18,9 +18,9 @@
         <ng-template #actions>
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let element"> 
-                <button mat-raised-button color="primary" (click)="onClick(element)">Detail</button>
-                <button mat-raised-button color="accent">Edit</button>
-                <button mat-raised-button color="warn">Delete</button>
+                <button mat-raised-button color="primary" (click)="onClick(element, 'Detail')">Detail</button>
+                <button mat-raised-button color="accent" (click)="onClick(element, 'Edit')">Edit</button>
+                <button mat-raised-button color="warn" (click)="onClick(element, 'Delete')">Delete</button>
             </mat-cell>
         </ng-template>
     </ng-container>

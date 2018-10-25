@@ -8,7 +8,7 @@ import { Data } from '../Data';
 @Component({
   selector: 'app-core-body',
   templateUrl: './core-body.component.html',
-  styleUrls: ['./core-body.component.css']
+  styleUrls: ['./core-body.component.scss']
 })
 
 export class CoreBodyComponent implements OnInit {
@@ -44,8 +44,15 @@ export class CoreBodyComponent implements OnInit {
       });
   }
 
-  onClick(data: any) {
+  onClick(data: any, input: any) {
     this.data.storage = data;
-    this.router.navigate(['detail']);
+    if (input === 'Edit') {
+      this.router.navigate(['edit']);
+    } else if (input === 'Detail') {
+      this.router.navigate(['detail']);
+    } else if (input === 'Delete') {
+      alert('Deleting an entity');
+      this.service$.deleteEntity(data);
+    }
   }
 }

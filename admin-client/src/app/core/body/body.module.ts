@@ -4,6 +4,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { BodyRoutingModule } from './body-routing.module';
 import { DetailViewComponent } from './detail-view/detail-view.component';
 import { Data } from './Data';
+import { EditViewComponent } from './edit-view/edit-view.component';
 
 @NgModule({
   imports: [
@@ -13,6 +14,7 @@ import { Data } from './Data';
   declarations: [
     CoreBodyComponent,
     DetailViewComponent,
+    EditViewComponent,
   ],
   exports: [
     CoreBodyComponent,

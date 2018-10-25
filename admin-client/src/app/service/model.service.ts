@@ -39,5 +39,17 @@ export class ModelService {
       return entities;
     }));
   }
+
+  createEntity(entity: any) {
+    console.log(`Sending create request to server: ${entity}`);
+  }
+
+  updateEntity(entity: any) {
+    console.log(`Sending update request to server: ${entity}`);
+  }
+
+  deleteEntity(entity: any) {
+    console.log(`Sending delete request to server: ${entity}`);
+  }
 }
 

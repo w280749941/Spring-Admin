@@ -7,6 +7,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import {MatGridListModule} from '@angular/material/grid-list';
+import {MatInputModule} from '@angular/material/input';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -21,6 +24,9 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatSidenavModule,
     MatGridListModule,
     MatSelectModule,
+    MatInputModule,
+    MatToolbarModule,
+    MatIconModule,
   ],
   declarations: [],
   exports: [
@@ -35,6 +41,9 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatSidenavModule,
     MatGridListModule,
     MatSelectModule,
+    MatInputModule,
+    MatToolbarModule,
+    MatIconModule,
   ]
 })
 export class SharedModule { }

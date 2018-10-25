@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Data } from '../Data';
 
 @Component({
-  selector: 'app-detail-view',
-  templateUrl: './detail-view.component.html',
-  styleUrls: ['./detail-view.component.scss']
+  selector: 'app-edit-view',
+  templateUrl: './edit-view.component.html',
+  styleUrls: ['./edit-view.component.scss']
 })
-export class DetailViewComponent implements OnInit {
+
+export class EditViewComponent implements OnInit {
 
   properties: string[];
   entity: any;
