@@ -10,6 +10,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import {MatInputModule} from '@angular/material/input';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
+import {MatDialogModule} from '@angular/material/dialog';
 
 @NgModule({
   imports: [
@@ -27,6 +28,8 @@ import {MatIconModule} from '@angular/material/icon';
     MatInputModule,
     MatToolbarModule,
     MatIconModule,
+    MatDialogModule,
+
   ],
   declarations: [],
   exports: [
@@ -44,6 +47,7 @@ import {MatIconModule} from '@angular/material/icon';
     MatInputModule,
     MatToolbarModule,
     MatIconModule,
+    MatDialogModule,
   ]
 })
 export class SharedModule { }

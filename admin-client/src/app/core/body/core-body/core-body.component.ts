@@ -1,9 +1,16 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ModelService } from 'src/app/service/model.service';
 import { map } from 'rxjs/operators';
-import { MatPaginator, MatTableDataSource } from '@angular/material';
-import { Router, NavigationExtras } from '@angular/router';
+import { MatPaginator, MatTableDataSource, MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { Data } from '../Data';
+import { ConfirmDialogComponent } from 'src/app/project/confirm-dialog/confirm-dialog.component';
+
+
+interface EntityInfo {
+  entity: string;
+  id: string;
+}
 
 @Component({
   selector: 'app-core-body',
@@ -15,17 +22,27 @@ export class CoreBodyComponent implements OnInit {
   @ViewChild(MatPaginator)
   paginator: MatPaginator;
 
-  constructor(private service$: ModelService, private router: Router, private data: Data) {}
+  constructor(private service$: ModelService, private router: Router, private data: Data, public dialog: MatDialog) {}
 
   displayedColumns: string[];
   dataSource: MatTableDataSource<any[]>;
   selected = 'None';
   entityNames: string[];
 
+  entitiesInfo: EntityInfo[];
+
   ngOnInit() {
     this.service$
       .getEntities()
-      .subscribe(val => (this.entityNames = val.map(x => x.name)));
+      .subscribe(val => {
+        this.entityNames = val.map(x => x.name);
+        this.entitiesInfo = val.map(x => {
+            const entityInfo = {} as EntityInfo;
+            entityInfo.entity = x.name;
+            entityInfo.id = x.idName;
+            return entityInfo;
+          });
+      });
   }
 
   onSelect() {
@@ -51,7 +68,13 @@ export class CoreBodyComponent implements OnInit {
     } else if (input === 'Detail') {
       this.router.navigate(['detail']);
     } else if (input === 'Delete') {
-      alert('Deleting an entity');
+      const entityInfo = this.entitiesInfo.find(x => x.entity === this.selected) as EntityInfo;
+      this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          property: entityInfo.id,
+          id: data[entityInfo.id]
+        }
+      });
       this.service$.deleteEntity(data);
     }
   }

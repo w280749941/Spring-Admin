@@ -47,4 +47,9 @@ public class AdminContainerTest extends AdminApplicationTests {
             Assert.assertNull(adminContainer.getService("role"));
         }
     }
+
+    @Test
+    public void getPropertiesShouldReturnMoreThanZero(){
+        Assert.assertNotEquals(0, adminContainer.getProperties().size());
+    }
 }

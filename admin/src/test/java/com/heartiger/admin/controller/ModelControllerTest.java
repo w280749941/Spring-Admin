@@ -38,6 +38,7 @@ public class ModelControllerTest extends AdminApplicationTests {
     private String findUrl;
     private String pageUrl;
     private String pageAllUrl;
+    private String propertyUrl;
 
     @Before
     public void setup(){
@@ -47,6 +48,7 @@ public class ModelControllerTest extends AdminApplicationTests {
         deleteUrl = urlPrefix + "2";
         pageUrl = urlPrefix + "page";
         pageAllUrl = urlPrefix + "page/all";
+        propertyUrl = "/admin/properties";
     }
 
     @Test
@@ -56,7 +58,6 @@ public class ModelControllerTest extends AdminApplicationTests {
 
     @Test
     public void findOneShouldReturnStatusCode200AndNotNull() throws Exception {
-
         PerformGetRequestTest(findUrl);
     }
 
@@ -174,6 +175,11 @@ public class ModelControllerTest extends AdminApplicationTests {
 
         Assert.assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         Assert.assertNotNull(resultDTO.getData());
+    }
+
+    @Test
+    public void findPropertiesReturnStatusCode200AndNotNull() throws Exception {
+        PerformGetRequestTest(propertyUrl);
     }
 
     private Object[] parseJsonResult(RequestBuilder requestBuilder) throws Exception {

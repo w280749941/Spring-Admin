@@ -42,8 +42,9 @@ public class AdminContainer {
 
         if(this.hm.containsKey(name))
             return;
-        Map<Object, Object> propertyMap = new HashMap<>();
+
         Map<Object, Object> idMap = new HashMap<>();
+        Map<Object, Object> propertyMap = new HashMap<>();
         List<Map<Object, Object>> lt = Arrays.asList(idMap, propertyMap);
         boolean found = false;
 
