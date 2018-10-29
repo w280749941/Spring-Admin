@@ -5,6 +5,8 @@ import { MatPaginator, MatTableDataSource, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Data } from '../Data';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
+import { ModifyDialogComponent } from 'src/app/shared/modify-dialog/modify-dialog.component';
+import { DetailDialogComponent } from 'src/app/shared/detail-dialog/detail-dialog.component';
 
 
 interface EntityInfo {
@@ -64,9 +66,17 @@ export class CoreBodyComponent implements OnInit {
   onClick(data: any, input: any) {
     this.data.storage = data;
     if (input === 'Edit') {
-      this.router.navigate(['edit']);
+      const dialogRef = this.dialog.open(ModifyDialogComponent, {
+        data: data
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        console.log(result);
+        if (result) {
+          this.service$.updateEntity(' ');
+        }
+      });
     } else if (input === 'Detail') {
-      this.router.navigate(['detail']);
+      this.dialog.open(DetailDialogComponent, {data: data});
     } else if (input === 'Delete') {
       const entityInfo = this.entitiesInfo.find(x => x.entity === this.selected) as EntityInfo;
       const dialogRef = this.dialog.open(ConfirmDialogComponent, {

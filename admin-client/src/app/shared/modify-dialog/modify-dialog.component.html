@@ -1,0 +1,15 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit(form, $event)">
+  <mat-list>
+    <div *ngFor="let property of properties">
+      <mat-list-item>
+        <div class="example-container">
+          <mat-form-field>
+            <input matInput placeholder={{property}} formControlName={{property}}>
+          </mat-form-field>
+        </div>
+      </mat-list-item>
+    </div>
+  </mat-list>
+  <button mat-raised-button color="primary" type="submit">Save</button>
+  <button type="button" mat-raised-button mat-dialog-close>Close</button>
+</form>

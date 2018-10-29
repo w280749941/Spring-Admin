@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule, MatPaginatorModule, MatButtonModule, MatSelectModule } from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { MatListModule } from '@angular/material/list';
@@ -12,6 +12,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { ModifyDialogComponent } from './modify-dialog/modify-dialog.component';
+import { DetailDialogComponent } from './detail-dialog/detail-dialog.component';
 
 @NgModule({
   imports: [
@@ -30,9 +32,12 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     MatToolbarModule,
     MatIconModule,
     MatDialogModule,
+    ReactiveFormsModule,
   ],
   declarations: [
     ConfirmDialogComponent,
+    ModifyDialogComponent,
+    DetailDialogComponent,
   ],
   exports: [
     CommonModule,
@@ -51,9 +56,12 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     MatIconModule,
     MatDialogModule,
     ConfirmDialogComponent,
+    ReactiveFormsModule,
   ],
   entryComponents: [
     ConfirmDialogComponent,
+    ModifyDialogComponent,
+    DetailDialogComponent,
   ],
 })
 export class SharedModule { }
