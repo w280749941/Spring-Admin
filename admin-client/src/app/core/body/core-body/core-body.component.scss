@@ -2,7 +2,7 @@ table {
     width: 100%;
 }
 mat-cell button{
-  margin-right: 8px;
+  margin-right: .5em;
 }  
 
 mat-cell {
@@ -10,5 +10,5 @@ mat-cell {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-right: 5em;
+  margin-right: 1em;
 }

@@ -11,6 +11,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   imports: [
@@ -29,9 +30,10 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatToolbarModule,
     MatIconModule,
     MatDialogModule,
-
   ],
-  declarations: [],
+  declarations: [
+    ConfirmDialogComponent,
+  ],
   exports: [
     CommonModule,
     BrowserAnimationsModule,
@@ -48,6 +50,10 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatToolbarModule,
     MatIconModule,
     MatDialogModule,
-  ]
+    ConfirmDialogComponent,
+  ],
+  entryComponents: [
+    ConfirmDialogComponent,
+  ],
 })
 export class SharedModule { }

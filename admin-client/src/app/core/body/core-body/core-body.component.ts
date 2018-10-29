@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Data } from '../Data';
-import { ConfirmDialogComponent } from 'src/app/project/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 
 
 interface EntityInfo {
@@ -69,12 +69,13 @@ export class CoreBodyComponent implements OnInit {
       this.router.navigate(['detail']);
     } else if (input === 'Delete') {
       const entityInfo = this.entitiesInfo.find(x => x.entity === this.selected) as EntityInfo;
-      this.dialog.open(ConfirmDialogComponent, {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
         data: {
           property: entityInfo.id,
           id: data[entityInfo.id]
         }
       });
+      dialogRef.afterClosed().subscribe(result => console.log(result));
       this.service$.deleteEntity(data);
     }
   }
