@@ -5,7 +5,10 @@
           <mat-option *ngFor="let entityName of entityNames" [value]="entityName">{{entityName}}</mat-option>
         </mat-select>
     </mat-form-field>
-    <p>You selected: {{selected}}</p>
+    <div class="bodyHeader">
+        <p>You selected: {{selected}}</p>
+        <button mat-raised-button color="primary" *ngIf="selected !== 'None'" (click)="onClick(undefined, 'New')">New {{selected | uppercase}}</button>
+    </div>
 </div>
 <div class="mat-elevation-z8">
   <table mat-table [dataSource]="dataSource">

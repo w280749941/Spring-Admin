@@ -143,12 +143,14 @@ public class ModelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(400, sb.toString()));
 
+
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResultDTOUtil.success(modelService.create(entityToCreate)));
     }
 
     @PutMapping("/entity/{entity}")
-    @Transactional
+    @Transactional(dontRollbackOn = Exception.class)
     public <T extends Serializable, K> ResponseEntity<ResponseDTO> updateEntity(
             @PathVariable("entity") String entity, @RequestBody Object requestBody)
             throws NoSuchFieldException, IllegalAccessException {
@@ -167,7 +169,7 @@ public class ModelController {
                     .body(ResultDTOUtil.error(ResultEnum.PARAMS_ERROR));
         }
 
-        Object idValue = getId(modelService, entityToUpdate);
+        K idValue = getId(modelService, entityToUpdate);
 
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(entityToUpdate);
 
@@ -181,18 +183,28 @@ public class ModelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResultDTOUtil.error(400, sb.toString()));
 
-        if(idValue == null)
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ResultDTOUtil.success(modelService.create(entityToUpdate)));
+        ResponseEntity<ResponseDTO> errorResponse = null;
+        if(idValue == null || modelService.findOne(idValue) == null){
+            try{
+                T createResult = modelService.create(entityToUpdate);
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(ResultDTOUtil.success(createResult));
+            }catch (Exception ex){
+                errorResponse = ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResultDTOUtil.error(400, ex.getMessage()));
+            }
+        }
+        return errorResponse == null
+                ? ResponseEntity.ok(ResultDTOUtil.success(modelService.update(entityToUpdate)))
+                : errorResponse;
 
-        return ResponseEntity.ok(ResultDTOUtil.success(modelService.update(entityToUpdate)));
     }
 
-    private <T extends Serializable, K> Object getId(ModelService<T, K> modelService, T entityToUpdate)
+    private <T extends Serializable, K> K getId(ModelService<T, K> modelService, T entityToUpdate)
             throws NoSuchFieldException, IllegalAccessException {
         Field field = entityToUpdate.getClass().getDeclaredField(modelService.getIdProperty());
         field.setAccessible(true);
-        return field.get(entityToUpdate);
+        return (K) field.get(entityToUpdate);
     }
 
     @GetMapping("/entity/{entity}/page/all")

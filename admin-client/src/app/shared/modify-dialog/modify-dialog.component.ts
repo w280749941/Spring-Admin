@@ -16,11 +16,15 @@ export class ModifyDialogComponent implements OnInit {
   constructor(private fb: FormBuilder,
     @Inject(MAT_DIALOG_DATA) private data: any,
     private dialogRef: MatDialogRef<ModifyDialogComponent>) {
+      this.dialogRef.disableClose = true;
+      this.dialogRef.backdropClick().subscribe(result => {
+        this.dialogRef.close({success: false});
+      });
   }
 
   ngOnInit() {
     if (this.data === undefined) {
-      this.dialogRef.close();
+      this.dialogRef.close({success: false});
       return;
     }
     this.entity = this.data;
@@ -34,8 +38,8 @@ export class ModifyDialogComponent implements OnInit {
 
   onSubmit({value, valid}, ev: Event) {
     ev.preventDefault();
-    console.log(JSON.stringify(value));
-    console.log(valid);
-    this.dialogRef.close(true);
+    if (valid) {
+      this.dialogRef.close({success: true, data: value});
+    }
   }
 }

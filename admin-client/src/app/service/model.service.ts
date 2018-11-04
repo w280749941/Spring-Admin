@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, Inject } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Result } from '../domain/Result.model';
 import { Entity, Property } from '../domain/Entity';
 
@@ -9,14 +9,20 @@ import { Entity, Property } from '../domain/Entity';
   providedIn: 'root'
 })
 export class ModelService {
-  constructor(private http: HttpClient) {}
+
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type':  'application/json',
+    })
+  };
+  constructor(private http: HttpClient, @Inject('BASE_URL') private remoteUrl: string) {}
 
   getData(entity: string): Observable<Result> {
-    return this.http.get<Result>(`http://localhost:8080/admin/entity/${entity}/`); // .pipe(map(val => val['data']));
+    return this.http.get<Result>(`${this.remoteUrl}/entity/${entity}/`); // .pipe(map(val => val['data']));
   }
 
   getEntities(): Observable<Entity[]> {
-    return this.http.get<Result>('http://localhost:8080/admin/properties/').pipe(map(x => {
+    return this.http.get<Result>(`${this.remoteUrl}/properties/`).pipe(map(x => {
       const entities = [] as Entity[];
       const response = x.data;
       const entitieNames = Object.getOwnPropertyNames(response);
@@ -40,16 +46,22 @@ export class ModelService {
     }));
   }
 
-  createEntity(entity: any) {
-    console.log(`Sending create request to server: ${entity}`);
+  createEntity(data: any) {
+    const url = `${this.remoteUrl}/entity/${data.entity}`;
+    console.log(`Sending create request to server ${url}`);
+    return this.http.post(url, JSON.stringify(data.body), this.httpOptions);
   }
 
-  updateEntity(entity: any) {
-    console.log(`Sending update request to server: ${entity}`);
+  updateEntity(data: any) {
+    const url = `${this.remoteUrl}/entity/${data.entity}`;
+    console.log(`Sending update request to server ${url}`);
+    return this.http.put(url, JSON.stringify(data.body), this.httpOptions);
   }
 
-  deleteEntity(entity: any) {
-    console.log(`Sending delete request to server: ${entity}`);
+  deleteEntity(data: any) {
+    const url = `${this.remoteUrl}/entity/${data.entity}/${data.id}`;
+    console.log(`Sending delete request to server: ${url}`);
+    return this.http.delete(url);
   }
 }
 

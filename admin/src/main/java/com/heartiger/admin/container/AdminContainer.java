@@ -5,6 +5,7 @@ import com.heartiger.admin.service.impl.ModelServiceImpl;
 import com.heartiger.admin.utils.TypeConverter;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -61,6 +62,10 @@ public class AdminContainer {
                         modelService.setIdProperty(idName);
                         modelService.setIdClazz((Class<K>) field.getType());
                         modelService.setClass(clazz);
+                        GeneratedValue[] generatedValuesTypes = field.getAnnotationsByType(GeneratedValue.class);
+                        if(generatedValuesTypes != null && generatedValuesTypes.length != 0) {
+                            modelService.setIdAuto(true);
+                        }
                         idMap.put("id", idName);
                         this.hm.put(name, modelService);
                         this.propertyContainer.put(name, lt);

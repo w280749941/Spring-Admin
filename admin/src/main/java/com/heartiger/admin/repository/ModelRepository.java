@@ -16,6 +16,8 @@ public abstract class ModelRepository<T extends Serializable, K>{
 
     private String idProperty;
 
+    private boolean isIdAuto;
+
     protected String getIdProperty() {
         return idProperty;
     }
@@ -77,5 +79,13 @@ public abstract class ModelRepository<T extends Serializable, K>{
 
     protected EntityManager getEntityManager(){
         return this.entityManager;
+    }
+
+    public boolean isIdAuto() {
+        return isIdAuto;
+    }
+
+    public void setIdAuto(boolean idAuto) {
+        this.isIdAuto = idAuto;
     }
 }

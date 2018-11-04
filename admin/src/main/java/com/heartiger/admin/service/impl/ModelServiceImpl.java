@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 
 @Service
@@ -41,6 +42,15 @@ public class ModelServiceImpl<T extends Serializable, K> extends ModelRepository
     @Override
     @Transactional
     public T create(T entity) {
+        if(isIdAuto()){
+            try {
+                Field field = getClazz().getDeclaredField(getIdProperty());
+                field.setAccessible(true);
+                field.set(entity, null);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
         return super.save(entity);
     }
 
@@ -91,4 +101,13 @@ public class ModelServiceImpl<T extends Serializable, K> extends ModelRepository
         super.setIdClazz(idClazz);
     }
 
+    @Override
+    public void setIdAuto(boolean idAuto){
+        super.setIdAuto(idAuto);
+    }
+
+    @Override
+    public boolean isIdAuto(){
+        return super.isIdAuto();
+    }
 }

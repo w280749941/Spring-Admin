@@ -41,4 +41,8 @@ public interface ModelService<T extends Serializable, K> {
     PageableService<T> getPageableService();
 
     EntityManager getEntityManager();
+
+    boolean isIdAuto();
+
+    void setIdAuto(boolean idAuto);
 }

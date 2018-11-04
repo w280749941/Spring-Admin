@@ -7,6 +7,7 @@ import { Data } from '../Data';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { ModifyDialogComponent } from 'src/app/shared/modify-dialog/modify-dialog.component';
 import { DetailDialogComponent } from 'src/app/shared/detail-dialog/detail-dialog.component';
+import { Entity } from 'src/app/domain/Entity';
 
 
 interface EntityInfo {
@@ -32,11 +33,14 @@ export class CoreBodyComponent implements OnInit {
   entityNames: string[];
 
   entitiesInfo: EntityInfo[];
+  propertiesInfo: Entity[];
+  selectedPropertyInfo: {};
 
   ngOnInit() {
     this.service$
       .getEntities()
       .subscribe(val => {
+        this.propertiesInfo = val;
         this.entityNames = val.map(x => x.name);
         this.entitiesInfo = val.map(x => {
             const entityInfo = {} as EntityInfo;
@@ -50,6 +54,7 @@ export class CoreBodyComponent implements OnInit {
   onSelect() {
     if (this.selected === 'None' || this.selected === undefined) {
       this.dataSource = null;
+      this.selected = 'None';
       return;
     }
     this.service$
@@ -61,18 +66,31 @@ export class CoreBodyComponent implements OnInit {
         this.dataSource = new MatTableDataSource<any[]>(val);
         this.dataSource.paginator = this.paginator;
       });
+
+    this.selectedPropertyInfo =  this.propertiesInfo
+                                  .filter(x => x.name === this.selected)[0].properties
+                                  .reduce((emptyEntity, property) => {
+                                    emptyEntity[property.name] = '';
+                                    return emptyEntity;
+                                  }, {});
   }
 
   onClick(data: any, input: any) {
-    this.data.storage = data;
+    // this.data.storage = data;
     if (input === 'Edit') {
       const dialogRef = this.dialog.open(ModifyDialogComponent, {
         data: data
       });
       dialogRef.afterClosed().subscribe(result => {
-        console.log(result);
-        if (result) {
-          this.service$.updateEntity(' ');
+        if (result.success) {
+          this.service$.updateEntity({
+            entity: this.selected,
+            body: result.data
+          }).subscribe(
+            this.onSuccess,
+            this.onError,
+            this.onComplete
+          );
         }
       });
     } else if (input === 'Detail') {
@@ -85,8 +103,48 @@ export class CoreBodyComponent implements OnInit {
           id: data[entityInfo.id]
         }
       });
-      dialogRef.afterClosed().subscribe(result => console.log(result));
-      this.service$.deleteEntity(data);
+      dialogRef.afterClosed().subscribe(result => {
+        if (result === true) {
+          this.service$.deleteEntity({
+            entity: this.selected,
+            id: data[entityInfo.id]
+          }).subscribe(
+            this.onSuccess,
+            this.onError,
+            this.onComplete
+          );
+        }
+      });
+    } else if (input === 'New') {
+      const dialogRef = this.dialog.open(ModifyDialogComponent, {
+        data: this.selectedPropertyInfo
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result.success) {
+          this.service$.createEntity({
+            entity: this.selected,
+            body: result.data
+          }).subscribe(
+            this.onSuccess,
+            this.onError,
+            this.onComplete
+          );
+        }
+      });
     }
+  }
+
+  onSuccess = val => {
+    console.log('Update Successful: ' + JSON.stringify(val));
+    this.onSelect();
+  }
+
+  onError = err => {
+    console.log('Update error: ' + JSON.stringify(err));
+  }
+
+  onComplete = () => {
+    console.log('Completed');
   }
 }
