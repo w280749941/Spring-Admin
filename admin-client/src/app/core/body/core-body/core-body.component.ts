@@ -8,6 +8,7 @@ import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-di
 import { ModifyDialogComponent } from 'src/app/shared/modify-dialog/modify-dialog.component';
 import { DetailDialogComponent } from 'src/app/shared/detail-dialog/detail-dialog.component';
 import { Entity } from 'src/app/domain/Entity';
+import { DialogContent } from 'src/app/domain/DialogContent';
 
 
 interface EntityInfo {
@@ -79,7 +80,10 @@ export class CoreBodyComponent implements OnInit {
     // this.data.storage = data;
     if (input === 'Edit') {
       const dialogRef = this.dialog.open(ModifyDialogComponent, {
-        data: data
+        data: {
+          content: data,
+          extra: this.propertiesInfo.find(x => x.name === this.selected)
+        } as DialogContent
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result.success) {
@@ -117,7 +121,10 @@ export class CoreBodyComponent implements OnInit {
       });
     } else if (input === 'New') {
       const dialogRef = this.dialog.open(ModifyDialogComponent, {
-        data: this.selectedPropertyInfo
+        data: {
+          content: this.selectedPropertyInfo,
+          extra: this.propertiesInfo.find(x => x.name === this.selected)
+        } as DialogContent
       });
 
       dialogRef.afterClosed().subscribe(result => {
